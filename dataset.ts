@@ -204,6 +204,53 @@ export function classifyXORData(numSamples: number, noise: number):
   return points;
 }
 
+
+export function classifyNamblaData(numSamples: number, noise: number):
+    Example2D[] {
+  function sign(p1: Point, p2: Point, p3: Point) {
+    return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+  }
+
+  function pointInTriangle(pt: Point, v1: Point, v2: Point, v3: Point) {
+    let b1: boolean, b2: boolean, b3:  boolean;
+
+    b1 = sign(pt, v1, v2) < 0.0;
+    b2 = sign(pt, v2, v3) < 0.0;
+    b3 = sign(pt, v3, v1) < 0.0;
+    let r = 1
+    if ((b1 == b2) && (b2 == b3)) {
+      r = -1
+    }
+    return r;
+  }
+  let points: Example2D[] = [];
+  let triangleA: Point = {x: 5, y: 5};
+  let triangleB: Point = {x: -5, y: 5};
+  let triangleC: Point = {x: 0, y: -7};
+
+  let innerTriangleA: Point = {x: 3, y: 3};
+  let innerTriangleB: Point = {x: -3, y: 3};
+  let innerTriangleC: Point = {x: 0, y: -5};
+
+
+  for (let i = 0; i < numSamples; i++) {
+    let x = randUniform(-5, 5);
+
+    let y = randUniform(-5, 5);
+
+    let labelOutter = pointInTriangle({x: x, y: y}, triangleA, triangleB, triangleC);
+    let labelInner = pointInTriangle({x: x, y: y}, innerTriangleA, innerTriangleB, innerTriangleC);
+    let label = -1;
+    debugger;
+    if (labelInner === labelOutter) {
+      label = 1
+    }
+
+    points.push({x: x, y: y, label: label});
+  }
+  return points;
+}
+
 /**
  * Returns a sample from a uniform [a, b] distribution.
  * Uses the seedrandom library as the random generator.
